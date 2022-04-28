@@ -1,5 +1,6 @@
 <?php
-require_once 'functions.php';
+require_once 'connection.php';
+$result = mysqli_query($conn, "SELECT * FROM entries")
 
 ?>
 <!DOCTYPE html>
@@ -37,6 +38,10 @@ require_once 'functions.php';
         </nav>
     </div>
 
+    <?php
+    if (mysqli_num_rows($result)>0){
+        ?>
+  
     <div>
         <div class="card text-center">
             <h1>Master list of the participants</h1>
@@ -44,33 +49,31 @@ require_once 'functions.php';
 
     </div>
 
+    <?php
+    while($row = mysqli_fetch_array($result)){
+        ?>
+    
     <div class="list-group">
       
 
-        <div class="card">
-  <div class="card-body">
-   <?php get_all_data() ?>
-  </div>
-</div>
+
         <a href="#" class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">List group item heading</h5>
-                <small class="text-muted">3 days ago</small>
+                <h5 class="mb-1"><?php echo $row["first_name"]. " ".$row["last_name"]?></h5>
+                <small class="text-muted"><?php echo $row["status"]?></small>
             </div>
-            <p class="mb-1">Some placeholder content in a paragraph.</p>
-            <small class="text-muted">And some muted small print.</small>
+            <p class="mb-1"><?php echo $row["address"]?></p>
+           
         </a>
-        <a href="#" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">List group item heading</h5>
-                <small class="text-muted">3 days ago</small>
-            </div>
-            <p class="mb-1">Some placeholder content in a paragraph.</p>
-            <small class="text-muted">And some muted small print.</small>
-        </a>
+     
     </div>
-
-
+    <?php
+    }?>
+<?php
+  }else{
+      echo "No Result";
+  }
+?>
 
 
 

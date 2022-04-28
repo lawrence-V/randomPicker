@@ -1,3 +1,7 @@
+<?php
+require 'functions.php'; 
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +11,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lottery</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+ 
+</head>
+
 </head>
 
 <body>
@@ -42,10 +50,11 @@
             <div class="card-body text-center">
               <h5 class="card-title">Special title treatment</h5>
               <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Draw</a>
+              <input type="submit" class="btn btn-primary" id="button1" value="Draw">
             </div>
           </div>
         </div>
+     
         <div class="col-lg">
           <div class="card ">
             <h5 class="card-header text-center">Group draw</h5>
@@ -67,28 +76,14 @@
         <div class="col-sm">
           <div class="card">
             <h5 class="card-header text-center">Single draw</h5>
-            <ol class="list-group list-group-numbered">
-              <li class="list-group-item d-flex justify-content-between align-items-start">
+            <ol class="list-group list-group-numbered" id="display">
+              <!-- <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
                   <div class="fw-bold">Subheading</div>
                   Content for list item
                 </div>
                 <span class="badge bg-primary rounded-pill">14</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
+              </li> -->
             </ol>
 
           </div>
@@ -128,6 +123,59 @@
 
 
 
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  var random_number = function(){
+    return Math.floor(Math.random() * 10) + 1;
+};
+  $("#button1").click(function(){
+
+      var id = random_number();
+      var currentdate = new Date(); 
+    var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+      $("#result").val(id);
+      $.ajax({
+        url: 'functions.php',
+        type: 'post',
+        data: {id:id,
+              datetime:datetime},
+        dataType: 'JSON',
+        success: function(response){
+             var len = response.length;
+            for(var i=0; i<len; i++){
+                var id = response[i].id;
+                var first_name = response[i].first_name;
+                var last_name = response[i].last_name;
+                var address = response[i].address;
+
+                setTimeout(function() { 
+                  $("#display").append(`<li class="list-group-item d-flex justify-content-between align-items-start"><div class="ms-2 me-auto"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div><span class="badge bg-primary rounded-pill">14</span></li>`)
+    }, 2000);
+
+
+
+ 
+            }
+
+            }
+
+       
+    });
+     
+        }); 
+
+      
+       
+})
+</script>
 
 
 </body>

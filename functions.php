@@ -1,28 +1,33 @@
-<?php require 'connection.php'; ?>
+<?php require 'connection.php'; 
 
-function get_all_data()
-{
-
+if(isset($_POST['id'])){
     global $conn;
-    $result = mysqli_query($conn, "SELECT * FROM entry_list");
-
+    $winnerID = $_POST['id'];
+    $date = $_POST['datetime'];
+    echo $date;
+    $return_arr = array();
+    $result = mysqli_query($conn, "SELECT * FROM entries WHERE id='$winnerID'");
     if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '
-          
-        
+                while ($row = mysqli_fetch_array($result)) {
+                    //echo $result;
+                    $id = $row['id'];
+                    $first_name = $row['first_name'];
+                    $last_name = $row['last_name'];
+                    $address = $row['address'];
 
-            <ul class="list-group list-group-horizontal">
-            <li class="list-group-item">Title: ' . htmlspecialchars_decode($row['Firstname']) . '</li>
-            <li class="list-group-item">A second item</li>
-            <li class="list-group-item">A third item</li>
-        </ul>
-     
-        
-
-         ';
-        }
-    } else {
-        "<h3> databese is not working</h3>";
-    }
+                    $return_arr[] = array("id" => $id,
+                    "first_name" => $first_name,
+                    "last_name" => $last_name,
+                    "address" => $address);
+                //   echo $row['first_name'];
+                }
+                // Encoding array in JSON format
+                    echo json_encode($return_arr);
+            } else {
+                "<h3> databese is not working</h3>";
+            }
+            
+   
 }
+
+?>
