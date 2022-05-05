@@ -1,3 +1,12 @@
+<?php
+require 'connection.php'; 
+global $conn;
+// SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+// FROM Orders
+// INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+$single = mysqli_query($conn, "SELECT  entries.first_name, entries.last_name, entries.address, singlewinner.id,singlewinner.datePicked FROM entries INNER JOIN singlewinner ON entries.id=singlewinner.winner_id ORDER BY  singlewinner.id");
+$group = mysqli_query($conn, "SELECT  entries.first_name, entries.last_name, entries.address, groupwinner.id ,groupwinner.place, groupwinner.date FROM entries INNER JOIN groupwinner ON entries.id=groupwinner.winner_id ORDER BY groupwinner.id");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,44 +55,62 @@
         <div class="col-sm">
           <div class="card">
             <h5 class="card-header text-center">Single draw</h5>
+            <?php
+            if ($single->num_rows > 0) {
+                ?>
             <ol class="list-group list-group-numbered" id="display">
-              <!-- <li class="list-group-item d-flex justify-content-between align-items-start">
+            <?php  while($row = $single->fetch_assoc()) {?>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
+                  <div class="fw-bold"><?php echo $row['first_name']?></div>
+                  <?php echo $row['address']?>
+                
                 </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li> -->
+                <span class="badge text-dark "><?php echo $row['datePicked']?></span>
+              </li>
+              <?php }?>
             </ol>
-
+            <?php }?> 
           </div>
         </div>
         <div class="col-lg">
           <div class="card ">
             <h5 class="card-header text-center">Group draw</h5>
-            <ol class="list-group list-group-numbered">
-              <li class="list-group-item d-flex justify-content-between align-items-start">
+            <?php
+            if ($group->num_rows > 0) {
+                ?>
+            <ol class="list-group " id="display">
+            <?php  while($row = $group->fetch_assoc()) {?>
+             
+              <?php if($row['place'] % 2 == 0){?>
+               <li class="list-group-item d-flex justify-content-between align-items-start">
+              <span class="badge text-dark bg-warning"><?php echo $row['place']?></span>
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
+                  <div class="fw-bold"><?php echo $row['first_name']?></div>
+                  <?php echo $row['address']?>
+                
                 </div>
-                <span class="badge bg-primary rounded-pill">14</span>
+                <span class="badge text-dark "><?php echo $row['date']?></span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
+              <?php }?> 
+
+              <?php if($row['place'] % 2 != 0){?>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+              <span class="badge bg-success"><?php echo $row['place']?></span>
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
+                  <div class="fw-bold"><?php echo $row['first_name']?></div>
+                  <?php echo $row['address']?>
+                
                 </div>
-                <span class="badge bg-primary rounded-pill">14</span>
+                <span class="badge text-dark "><?php echo $row['date']?></span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
+              <?php }?> 
+              <?php }?> 
+           
+
+              <?php }?>
             </ol>
+          
 
           </div>
         </div>

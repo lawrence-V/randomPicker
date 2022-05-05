@@ -1,5 +1,10 @@
 <?php
-require 'functions.php'; 
+require 'functions.php';
+require 'connection.php';
+global $conn;
+$enrties = mysqli_query($conn, "SELECT * FROM entries");
+$rowcount = mysqli_num_rows( $enrties );
+
 
 ?>
 <!DOCTYPE html>
@@ -35,6 +40,9 @@ require 'functions.php';
           <li class="nav-item">
             <a class="nav-link" href="./list_Winner.php">List Winner</a>
           </li>
+          <li class="nav-item">
+            <h3 class="text-light">Total Participants: <?php echo $rowcount ?> </h3>
+          </li>
 
         </ul>
       </div>
@@ -59,9 +67,10 @@ require 'functions.php';
           <div class="card ">
             <h5 class="card-header text-center">Group draw</h5>
             <div class="card-body text-center">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <h5 class="card-title">Click Draw Button</h5>
+
               <input type="submit" class="btn btn-primary" id="button2" value="Draw">
+              <br><small>5 participant select per draw</small>
             </div>
           </div>
         </div>
@@ -75,45 +84,19 @@ require 'functions.php';
       <div class="row">
         <div class="col-sm">
           <div class="card">
-            <h5 class="card-header text-center">Single draw</h5>
+            <h5 class="card-header text-center">Single Draw Winner</h5>
             <ol class="list-group list-group-numbered" id="display">
-              <!-- <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li> -->
+             
             </ol>
 
           </div>
         </div>
         <div class="col-lg">
           <div class="card ">
-            <h5 class="card-header text-center">Group draw</h5>
-            <ol class="list-group list-group-numbered">
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                  <div class="fw-bold">Subheading</div>
-                  Content for list item
-                </div>
-                <span class="badge bg-primary rounded-pill">14</span>
-              </li>
-            </ol>
+            <h5 class="card-header text-center">Group Draw Winner</h5>
+            <ul class="list-group " id="display2">
+             
+            </ul>
 
           </div>
         </div>
@@ -133,7 +116,7 @@ $(document).ready(function(){
 let haveIt = [];
 function random_number() {
      //Generate random number
-     var maxNr = 25
+     var maxNr = '<?php echo $rowcount ?>'
      let random = Math.floor(Math.random() * maxNr) + 1;
 
 //Coerce to number by boxing
@@ -187,7 +170,7 @@ if(!haveIt.includes(random)) {
 
                 setTimeout(function() { 
 
-                  $("#display").append(`<li class="list-group-item d-flex justify-content-between align-items-start"><div class="ms-2 me-auto"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div><span class="badge bg-primary rounded-pill">14</span></li>`)
+                  $("#display").append(`<li class="list-group-item d-flex justify-content-between align-items-start"><div class="ms-2 me-auto"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div></li>`)
                 
     }, 1500);
                
@@ -209,11 +192,12 @@ if(!haveIt.includes(random)) {
   ///// For Group Draw
         
         let haveItGroup = [];
+        let maxNr = '<?php echo $rowcount ?>'
       
 function random_numberGroup() {
      //Generate random number
      let picked = [];
-     var maxNr = 25
+    
      for(var i = 0; i<5; i++){
      let random = Math.floor(Math.random() * maxNr) + 1;
 
@@ -223,50 +207,63 @@ function random_numberGroup() {
             picked.push(random);
             // return random;
         } else {
-            if(haveItGroup.length < maxNr) {
-              let randomAnother = Math.floor(Math.random() * maxNr) + 1;
-              if(!haveItGroup.includes(randomAnother)){
-              picked.push(randomAnother);
-              }
-            } else {
-              console.log('No more numbers available.')
-              return false;
-            }
-
+          i=i-1;
+          // if(haveItGroup > maxNr)
+           
         }
-    //  picked.push(random);
+  
      }
-//Coerce to number by boxing
-// for(var i = 0; i<1; i++){
-//      console.log(picked);
-//      }
 
+console.log(picked)
      return picked
 
 }
-  $("#button2").click(function(){
-      var id = random_numberGroup();
-      console.log(id)
-      if(id != null){
-      var currentdate = new Date(); 
-    var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
 
-                // console.log(datetime)
-                $("#result").val(id);
+
+let countdraw = 0;
+
+var place = 0;
+  $("#button2").click(function(){
+    var deci = maxNr / 5
+    var allow = parseInt(deci)
+    console.log(allow)
+    if(countdraw < allow){
+      var groupid = random_numberGroup();
+      countdraw++
+    
+     
+    //   console.log(groupid)
+      var jsonids = JSON.stringify(groupid);
+      var gcurrentdate = new Date(); 
+    var gdatetime = gcurrentdate.getDate() + "/"
+                + (gcurrentdate.getMonth()+1)  + "/" 
+                + gcurrentdate.getFullYear() + " @ "  
+                + gcurrentdate.getHours() + ":"  
+                + gcurrentdate.getMinutes() + ":" 
+                + gcurrentdate.getSeconds();
+
+                console.log(gdatetime)
+                $("#result").val(groupid);
+    var jsondatetimne = JSON.stringify(gdatetime);
+    place++;
+
+    
+
       $.ajax({
-        url: 'functions.php',
+        url: 'groupdraw.php',
         type: 'post',
-        data: {id:id, datetime: datetime},
+        data: {groupid:jsonids, groupdatetime: jsondatetimne, pl:place},
         dataType: 'JSON',
         success: function(response){
         
+          // console.log(response);
+          // var data = JSON.parse(response);
+          //  console.log(response[1].first_name);    
              var len = response.length;
-  
+          
+              
+                console.log(place)
+             setTimeout(function() { 
             for(var i=0; i<len; i++){
                 var id = response[i].id;
                 var first_name = response[i].first_name;
@@ -274,22 +271,28 @@ function random_numberGroup() {
                 var address = response[i].address;
                
 
-                setTimeout(function() { 
+                if(place % 2 == 0) {
+                  $("#display2").append(`<li class="list-group-item d-flex justify-content-between align-items-start"><div class="ms-2 me-auto"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div><span class="badge bg-success rounded-pill">${place}</span></li>`)
+                }
 
-                  $("#display").append(`<li class="list-group-item d-flex justify-content-between align-items-start"><div class="ms-2 me-auto"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div><span class="badge bg-primary rounded-pill">14</span></li>`)
+                // if the number is odd
+                else {
+                  $("#display2").append(`<li class="list-group-item d-flex justify-content-between align-items-start bg-secondary"><div class="ms-2 me-auto text-white"><div class="fw-bold" id="list">${first_name}  ${last_name}</div> ${address}</div><span class="badge text-dark bg-warning rounded-pill">${place}</span></li>`)
+                }
+                 
                 
-    }, 1500);
-               
+  
             }
-            
+          }, 1500); 
             }
           
        
     });
-    
   }else{
-    alert("The Picked Player already a WINNER!");
+    alert("No Group Random Available")
   }
+    
+
   
      
         }); 
